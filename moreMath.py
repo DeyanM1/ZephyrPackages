@@ -1,47 +1,40 @@
-def matchFunction(self, base, function, paramsList, variables):
-    match base:
-        case "#":
-            match function:
-                case _:
-                    pass
-        case "?":
-            match function:
-                case "exponentiation":
-                    variables = exponentiation(variables, paramsList[0], paramsList[1])
-                case "root":
-                    variables = root(variables, paramsList[0], paramsList[1])
-                case "factorial":
-                    variables = factorial(variables, paramsList[0])
+from __future__ import annotations
 
+import math
+from typing import Any, Callable
 
-                case _:
-                    pass
-    return variables
+from base import ZCommand, ActiveVars
 
+class MoreMath:
+    def __init__(self, cmd: ZCommand, activeVars: ActiveVars) -> None:
+        
+        self.functionRegistry: dict[str, Callable[..., Any]] = {}
 
-def exponentiation(variables, baseVar, exponentVar):
-    base = int(variables[baseVar].value)
-    exponent = int(variables[exponentVar].value)
-    result = base ** exponent
-    variables[baseVar].value = result
+        self.registerFunc({self.fact: ""})
 
-    return variables
+    def fact(self, cmd: ZCommand, activeVars: ActiveVars):
+        var1 = activeVars.get(cmd.args[0])
 
+        var1.value.setValue(str(math.factorial(int(var1.value.value))), "INT", activeVars) # type: ignore
 
-def root(variables, baseVar, exponentVar):
-    base = int(variables[baseVar].value)
-    exponent = int(variables[exponentVar].value)
-    result = base ** (1/exponent)
-    variables[baseVar].value = result
+        activeVars.update({var1.name: var1}) # type: ignore
+        return activeVars
 
-    return variables
+    def registerFunc(self, funcList: dict[Callable[..., Any], str]) -> None:
+        """
+        Register a function for a type. Its added to the functionRegistry
 
-def factorial(variables, baseVar):
-    base = int(variables[baseVar].value)
+        Args:
+            func (Callable[..., Any]): The function to generate the docstring for.
+            name (Optional[str]): The name to use in the docstring. If not provided, the function's name will be used.
 
-    result = 1
-    for i in range(2, base + 1):
-        result *= i
+        """
+        for func, name in funcList.items():
+            if name:
+                self.functionRegistry[name] = func
+            else:
+                self.functionRegistry[func.__name__] = func
+ 
 
-    variables[baseVar].value = result
-    return variables
+def load() -> dict[str, type]:
+    return {"": MoreMath}
