@@ -1,4 +1,4 @@
-# Zephyr Library
+# Zephyr Libraries
 
 This document lists official libraries maintained for the Zephyr programming language. These libraries follow Zephyr standards and integrate directly with the Zephyr build system.
 
