@@ -12,7 +12,6 @@ def importHandler(names: list[str]):
     import sys
 
     base_path = Path(__file__).resolve().parent / "base.py"
-    print(base_path)
 
     moduleName = base_path.stem
 
